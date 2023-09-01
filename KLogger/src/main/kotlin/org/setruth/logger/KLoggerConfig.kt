@@ -94,7 +94,7 @@ class KLoggerConfigSettingScope {
      * 当启动日志存储的时候，虽然不打印debug内容，但是会存储到日志文件中
      * @param enabled Boolean
      */
-    fun debugLog(enabled: Boolean = true) {
+    fun showDebugLog(enabled: Boolean = true) {
         kLoggerConfigInfo.showDebug = enabled
     }
 
