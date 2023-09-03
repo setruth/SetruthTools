@@ -8,5 +8,5 @@ pluginManagement {
 
 
 rootProject.name = "SetruthTools"
-include("KLogger")
+include("KLogr")
 include("TimeTool")

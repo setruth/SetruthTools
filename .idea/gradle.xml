@@ -13,7 +13,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/KLogger" />
+            <option value="$PROJECT_DIR$/KLogr" />
             <option value="$PROJECT_DIR$/TimeTool" />
           </set>
         </option>
