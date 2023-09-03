@@ -1,4 +1,4 @@
-package org.setruth.klogger
+package org.setruth.tools.klogr
 
 import java.io.BufferedWriter
 import java.io.File
@@ -12,7 +12,7 @@ private val simpleDateFormat = SimpleDateFormat("yyy-MM-dd")
 /**
  * 核心内容，调用KLogger进行日志的打印执行
  */
-object KLogger {
+object KLogr {
     //信息日志 蓝色
     @JvmStatic
     fun info(logTag: String = "info", content: LogContentScope.() -> Unit = {}) {
@@ -64,7 +64,7 @@ object KLogger {
      */
     private fun getThreadLogInfo() = Thread.currentThread().run {
         val nowStackIndex = stackTrace.indexOfLast {
-            it.className == this@KLogger.javaClass.name
+            it.className == this@KLogr.javaClass.name
         }
         val stackTraceElement = stackTrace[nowStackIndex + 1]
         LogThreadInfo(name, stackTraceElement)

@@ -1,4 +1,4 @@
-package org.setruth.klogger
+package org.setruth.tools.klogr
 
 import java.io.File
 
@@ -17,7 +17,7 @@ internal val kLoggerConfigInfo = KLoggerConfigInfo()
  * @param configSettingScope [@kotlin.ExtensionFunctionType] Function1<KLoggerConfigSettingScope, Unit>
  * @return KLoggerConfigSettingScope
  */
-fun initKLoggerConfig(configSettingScope: KLoggerConfigSettingScope.() -> Unit = {}) =
+fun initKLogrConfig(configSettingScope: KLoggerConfigSettingScope.() -> Unit = {}) =
     KLoggerConfigSettingScope().apply {
         configSettingScope()
         if (kLoggerConfigInfo.showStartLogger) {
@@ -48,7 +48,7 @@ internal fun printStartLogger() {
                                  
     """.trimIndent()
     )
-    KLogger.info("KLogger日志工具启动") {
+    KLogr.info("KLogger日志工具启动") {
         "是否显示debug日志" and kLoggerConfigInfo.showDebug
         "日志存储文件夹" and kLoggerConfigInfo.storagePath
         "是否显示日志启动初始Logo及配置内容" and kLoggerConfigInfo.showStartLogger
@@ -70,7 +70,7 @@ internal data class KLoggerConfigInfo(
 )
 
 /**
- * KLogger的配置空间，请调用[initKLoggerConfig]进行配置
+ * KLogger的配置空间，请调用[initKLogrConfig]进行配置
  */
 class KLoggerConfigSettingScope {
     /**

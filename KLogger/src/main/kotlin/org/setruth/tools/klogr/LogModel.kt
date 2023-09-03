@@ -1,4 +1,4 @@
-package org.setruth.klogger
+package org.setruth.tools.klogr
 
 /**
  * TODO
