@@ -1,4 +1,4 @@
-package org.setruth.logger
+package org.setruth.klogger
 
 import java.io.BufferedWriter
 import java.io.File

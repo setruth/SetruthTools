@@ -5,5 +5,6 @@ pluginManagement {
     }
     
 }
-rootProject.name = "SetruthDependencyLibrary"
+
+rootProject.name = "SetruthTools"
 include("KLogger")

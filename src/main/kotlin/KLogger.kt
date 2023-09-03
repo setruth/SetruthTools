@@ -2,8 +2,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.setruth.logger.KLogger
-import org.setruth.logger.initKLoggerConfig
+import org.setruth.klogger.KLogger
+import org.setruth.klogger.initKLoggerConfig
 
 /**
  * TODO

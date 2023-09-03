@@ -9,6 +9,7 @@ group = "org.setruth"
 version = "1.0-SNAPSHOT"
 
 repositories {
+
     mavenCentral()
 }
 

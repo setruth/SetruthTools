@@ -1,4 +1,4 @@
-package org.setruth.logger
+package org.setruth.klogger
 
 
 //日志类型
