@@ -121,7 +121,8 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
     val logFileName = simpleDateFormat.format(System.currentTimeMillis())
     val fileNameList = getFileList(logFileName, folderPath)
     val logFile = if (fileNameList!!.isEmpty()) {
-        val file = File("${folderPath}\$logFileName(0).txt")
+        val file = File("${folderPath}\\${logFileName}(0).txt")
+        println(file)
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -129,7 +130,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
     } else {
         val lastFile = fileNameList.last()
         if (lastFile.length() >= logFileMaxSize) {
-            File("${folderPath}\$logFileName(${fileNameList.size}).txt").also { it.createNewFile() }
+            File("${folderPath}\\$logFileName(${fileNameList.size}).txt").also { it.createNewFile() }
         } else {
             lastFile
         }
