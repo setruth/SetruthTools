@@ -118,7 +118,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
     val logFileName = simpleDateFormat.format(System.currentTimeMillis())
     val fileNameList = getFileList(logFileName, folderPath)
     val logFile = if (fileNameList!!.isEmpty()) {
-        val file = File("${folderPath}\\${logFileName}(0).txt","UTF-8")
+        val file = File("${folderPath}\\${logFileName}(0).txt",)
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -131,11 +131,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
             lastFile
         }
     }
-
-    val bufferedWriter = BufferedWriter(OutputStreamWriter(FileOutputStream(logFile), "utf-8"))
-    bufferedWriter.write(content)
-    bufferedWriter.newLine()
-    bufferedWriter.close()
+    logFile.appendText("$content \n")
 
 }
 
