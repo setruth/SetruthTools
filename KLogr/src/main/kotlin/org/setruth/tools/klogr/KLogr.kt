@@ -1,8 +1,6 @@
 package org.setruth.tools.klogr
 
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
+import java.io.*
 import java.text.SimpleDateFormat
 
 
@@ -106,7 +104,6 @@ class KLogr internal constructor(
         println("$color$logStrInfo \u001b[0m")
         writeLogFile(activeLogSave,logStrInfo, saveFolderPath, logMaxFileSize)
     }
-
 }
 
 /**
@@ -121,8 +118,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
     val logFileName = simpleDateFormat.format(System.currentTimeMillis())
     val fileNameList = getFileList(logFileName, folderPath)
     val logFile = if (fileNameList!!.isEmpty()) {
-        val file = File("${folderPath}\\${logFileName}(0).txt")
-        println(file)
+        val file = File("${folderPath}\\${logFileName}(0).txt","UTF-8")
         if (!file.exists()) {
             file.createNewFile()
         }
@@ -136,8 +132,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
         }
     }
 
-    val fileWriter = FileWriter(logFile, true)
-    val bufferedWriter = BufferedWriter(fileWriter)
+    val bufferedWriter = BufferedWriter(OutputStreamWriter(FileOutputStream(logFile), "utf-8"))
     bufferedWriter.write(content)
     bufferedWriter.newLine()
     bufferedWriter.close()
@@ -207,6 +202,5 @@ private fun handleContent(contentList: List<LogContentListItem>): String {
  */
 private fun getFileList(startName: String, saveFolderPath: String) =
     File(saveFolderPath).listFiles { file ->
-
         file.name.startsWith(startName)
     }
