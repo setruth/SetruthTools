@@ -1,5 +1,10 @@
 package org.setruth.tools.time
 
+import org.setruth.tools.klogr.KLogr
+import org.setruth.tools.klogr.createKLogrBuilder
+import java.io.File
+
+
 /**
  * TODO
  * @author setruth
@@ -8,7 +13,10 @@ package org.setruth.tools.time
  */
 
 object TimeTool {
+    fun test(){
 
-    fun justTest():String = "仅供测试"
+    }
 
 }
+
+

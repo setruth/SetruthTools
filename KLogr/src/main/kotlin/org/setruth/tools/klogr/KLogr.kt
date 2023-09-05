@@ -12,9 +12,13 @@ private val simpleDateFormat = SimpleDateFormat("yyy-MM-dd")
 /**
  * 核心内容，调用KLogger进行日志的打印执行
  */
-object KLogr {
+class KLogr internal constructor(
+    private val saveFolderPath: String,
+    private val activeLogSave: Boolean,
+    private val showDebugLog: Boolean,
+    private val logMaxFileSize: Int,
+) {
     //信息日志 蓝色
-    @JvmStatic
     fun info(logTag: String = "info", content: KLogrContentScope.() -> Unit = {}) {
         KLogrContentScope().run {
             content()
@@ -23,7 +27,6 @@ object KLogr {
     }
 
     //警告日志 黄色
-    @JvmStatic
     fun warn(logTag: String = "warn", content: KLogrContentScope.() -> Unit = {}) {
         KLogrContentScope().run {
             content()
@@ -32,7 +35,6 @@ object KLogr {
     }
 
     //错误日志 红色
-    @JvmStatic
     fun err(logTag: String = "err", content: KLogrContentScope.() -> Unit = {}) {
         KLogrContentScope().run {
             content()
@@ -41,7 +43,6 @@ object KLogr {
     }
 
     //测试日志 紫色
-    @JvmStatic
     fun debug(logTag: String = "debug", content: KLogrContentScope.() -> Unit = {}) {
         KLogrContentScope().run {
             content()
@@ -50,7 +51,6 @@ object KLogr {
     }
 
     //通过日志 绿色
-    @JvmStatic
     fun success(logTag: String = "success", content: KLogrContentScope.() -> Unit = {}) {
         KLogrContentScope().run {
             content()
@@ -84,52 +84,52 @@ object KLogr {
                 content = logContentList
             )
         }
-
     }
 
-}
+    /**
+     * 控制台打印Log，并且进行日志存储判断
+     * @receiver KLogrLogType
+     * @param logInfo LogInfo
+     */
 
-/**
- * 打印日志
- * @receiver KLogrLogType
- * @param logInfo LogInfo
- */
-private infix fun KLogrLogType.printLog(logInfo: LogInfo) {
-    val logStrInfo = """ 
+    private infix fun KLogrLogType.printLog(logInfo: LogInfo) {
+        val logStrInfo = """ 
             => ${System.currentTimeMillis() formatTimestampByLogType this} 
             || logTag  : ${logInfo.logTag}---Thread: ${logInfo.logThreadInfo.threadName} 
             || location: ${logInfo.logThreadInfo.stackTraceElement} 
             || content : ${handleContent(logInfo.content)}
         """.trimIndent()
-    if (!kLogrConfigInfo.showDebug && this == KLogrLogType.DEBUG) {
-        writeLogFile(logStrInfo)
-        return
+        if (!showDebugLog && this == KLogrLogType.DEBUG) {
+            writeLogFile(activeLogSave,logStrInfo, saveFolderPath, logMaxFileSize)
+            return
+        }
+        println("$color$logStrInfo \u001b[0m")
+        writeLogFile(activeLogSave,logStrInfo, saveFolderPath, logMaxFileSize)
     }
-    println("$color$logStrInfo \u001b[0m")
-    writeLogFile(logStrInfo)
+
 }
 
 /**
  * 写入日志到文件中
  * @param content String
  */
-private fun writeLogFile(content: String) {
-    if (kLogrConfigInfo.storagePath == null) {
+private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: String, logFileMaxSize: Int) {
+    if (!activeLogSave) {
         return
     }
+    val folderPath = checkLogSavePath(saveFolderPath)
     val logFileName = simpleDateFormat.format(System.currentTimeMillis())
-
-    val fileNameList = getFileNameList(logFileName)
+    val fileNameList = getFileList(logFileName, folderPath)
     val logFile = if (fileNameList!!.isEmpty()) {
-        val file = File("${kLogrConfigInfo.storagePath}$logFileName(0).txt")
+        val file = File("${folderPath}\$logFileName(0).txt")
         if (!file.exists()) {
             file.createNewFile()
         }
         file
     } else {
         val lastFile = fileNameList.last()
-        if (lastFile.length() >= kLogrConfigInfo.logFileSize) {
-            File("${kLogrConfigInfo.storagePath}$logFileName(${fileNameList.size}).txt").also { it.createNewFile() }
+        if (lastFile.length() >= logFileMaxSize) {
+            File("${folderPath}\$logFileName(${fileNameList.size}).txt").also { it.createNewFile() }
         } else {
             lastFile
         }
@@ -144,13 +144,41 @@ private fun writeLogFile(content: String) {
 }
 
 /**
+ * 判断文件夹存储路径是否存在
+ * 如果为"" 则在当前文件夹创建一个名为KLogrLog的文件进行日志存储
+ * 如果不为空但是文件夹不存在，则自动创建
+ * 如果不为空且存在，则不做处理
+ * @param path String
+ * @return String 存储的文件夹路径
+ */
+fun checkLogSavePath(path: String): String {
+    val folderPath = if (path.isBlank()) {
+        // 如果路径为空，则生成当前路径下的文件夹名为Logger
+        val currentPath = System.getProperty("user.dir")
+        val loggerFolder = File(currentPath, "KLogrLog")
+        if (!loggerFolder.exists()) {
+            loggerFolder.mkdir()
+        }
+        loggerFolder.absolutePath
+    } else {
+        // 如果路径不为空，则判断文件夹是否存在，不存在则创建
+        val folder = File(path)
+        if (!folder.exists()) {
+            folder.mkdir()
+        }
+        folder.absolutePath
+    }
+
+    return folderPath
+}
+/**
  * 转换时间戳根据日志类型
  * @receiver Long
- * @param KLogrLogType KLogrLogType
+ * @param logType KLogrLogType
  * @return String
  */
-private infix fun Long.formatTimestampByLogType(KLogrLogType: KLogrLogType) =
-    "${KLogrLogType.logTypeName}---${simpleDateTimeFormat.format(this)}"
+private infix fun Long.formatTimestampByLogType(logType: KLogrLogType) =
+    "${logType.logTypeName}---${simpleDateTimeFormat.format(this)}"
 
 /**
  * 处理打印的内容
@@ -176,8 +204,8 @@ private fun handleContent(contentList: List<LogContentListItem>): String {
  * @param startName String
  * @return Array<File>
  */
-private fun getFileNameList(startName: String) =
-    File(kLogrConfigInfo.storagePath!!).listFiles { file ->
+private fun getFileList(startName: String, saveFolderPath: String) =
+    File(saveFolderPath).listFiles { file ->
 
         file.name.startsWith(startName)
     }
