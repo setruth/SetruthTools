@@ -143,7 +143,7 @@ private fun writeLogFile(activeLogSave:Boolean,content: String, saveFolderPath: 
  * @param path String
  * @return String 存储的文件夹路径
  */
-fun checkLogSavePath(path: String): String {
+private fun checkLogSavePath(path: String): String {
     val folderPath = if (path.isBlank()) {
         // 如果路径为空，则生成当前路径下的文件夹名为Logger
         val currentPath = System.getProperty("user.dir")
@@ -196,7 +196,14 @@ private fun handleContent(contentList: List<LogContentListItem>): String {
  * @param startName String
  * @return Array<File>
  */
+
 private fun getFileList(startName: String, saveFolderPath: String) =
-    File(saveFolderPath).listFiles { file ->
-        file.name.startsWith(startName)
-    }
+    File(saveFolderPath).listFiles()
+        ?.filter { it.name.startsWith(startName) }
+        ?.sortedWith(compareBy({ extractNumber(it.name) }, { it.name }))
+
+fun extractNumber(fileName: String): Int {
+    val startIndex = fileName.indexOf('(') + 1
+    val endIndex = fileName.indexOf(')')
+    return fileName.substring(startIndex, endIndex).toInt()
+}

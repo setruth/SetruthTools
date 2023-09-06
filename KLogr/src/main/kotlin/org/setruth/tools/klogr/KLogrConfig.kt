@@ -53,7 +53,7 @@ class KLogrBuilder internal constructor() {
             logSavePath,
             activeLogSave,
             showDebugLog,
-            logFileSize
+            logFileSize* LOG_FILE_SIZE_UNIT
         )
         if (showStartInfo) {
             showStartLogo()
@@ -69,8 +69,11 @@ class KLogrBuilder internal constructor() {
         return kLogr
     }
     companion object{
-        //默认的日志文件大小
+        //默认的文件大小单位 1字节
+       private const val LOG_FILE_SIZE_UNIT=1024
+        //默认的文件大小 1m
        private const val DEFAULT_LOG_FILE_SIZE=1024
+
     }
 }
 
